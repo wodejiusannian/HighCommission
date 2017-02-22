@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -11,6 +12,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.example.highcommission.bean.JavaBean;
 import com.example.highcommission.config.NetConfig;
 import com.example.highcommission.utils.UtilsInternet;
 
@@ -27,23 +29,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int page = 1;
     private int count = 0;
     private int record = 200;
-    private List<String> mData = new ArrayList<>();
+    private List<JavaBean> mData = new ArrayList<>();
     private UtilsInternet internet = UtilsInternet.getInstance();
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            String s = mData.get(count);
+            JavaBean bean = mData.get(count);
+            String s = bean.getJihua_link();
+            String id = bean.getID();
             count++;
             record++;
             if (record % 200 == 0) {
                 loadMore(page);
                 return;
             }
-            String path = String.format(NetConfig.UP_GENERALIZE, s);
-            Log.i("TAG", "-------------count" + count);
-            Log.i("TAG", "-------------record" + count);
-            mWB.loadUrl(path);
+            if (!TextUtils.isEmpty(s)) {
+                String path = String.format(NetConfig.UP_GENERALIZE, id);
+                Log.i("TAG", "----------PAHT" + path);
+                mWB.loadUrl(path);
+            }
             mHandler.sendEmptyMessageDelayed(1, 100);
         }
     };
@@ -114,7 +119,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             JSONArray array = object.getJSONArray("result");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject jsonObject = array.getJSONObject(i);
-                mData.add(jsonObject.getString("ID"));
+                JavaBean bean = new JavaBean();
+                bean.setID(jsonObject.getString("ID"));
+                bean.setJihua_link(jsonObject.getString("Jihua_link"));
+                mData.add(bean);
             }
             mHandler.sendEmptyMessageDelayed(1, 1000);
         } catch (JSONException e) {

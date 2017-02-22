@@ -16,5 +16,5 @@ public interface NetConfig {
     /*
     * 获取数据的接口
     * */
-    String GET_DATA = "http://api.dataoke.com/index.php?r=Port/index&type=total&appkey=gyqy9mufpq&v=2&page=1";
+    String GET_DATA = "http://api.dataoke.com/index.php?r=Port/index&type=total&appkey=gyqy9mufpq&v=2&page=%d";
 }
